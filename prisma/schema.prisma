@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:sofi@123@localhost:3306/watches_ecommerce"
+}
+
+model Watch {
+  id              Int       @id
+  price           Float
+  createdAt      DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  model           String
+  origin          String
+  serialNumber    String
+  quantityOnHand  Int
+  isActive        Boolean    @default(true)
+  Categories      Category?
+  Watchlines      Watchline?
+}
+
+model Category {
+  id          Int      @id
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isActive        Boolean    @default(true)
+  watches     Watch[]
+}
+
+
+model Customer {
+  id         Int       @id
+  name       String
+  version    Int
+  addedAt    DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  isActive   Boolean    @default(true)
+
+  WatchOrders          WatchOrder[]
+
+
+
+}
+
+
+model Watchordershipment{
+
+  id                  Int @id
+  trackingNumber      String
+  version             Int
+  addedAt             DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  isActive            Boolean    @default(true)
+  WatchOrders          WatchOrder[]
+}
+
+
+model WatchOrder {
+  id                    Int  @id
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  customerId            Int
+  WatchordershipmentID  Int
+  customerRef           String
+  version               Int
+  isActive              Boolean @default(true)
+  Watchlines            Watchline[]
+
+
+  customer              Customer @relation(fields: [customerId], references: [id])
+  watchordershipment    Watchordershipment @relation(fields: [WatchordershipmentID], references: [id])
+}
+
+model Watchline{
+
+  id                  Int @id
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  orderQuantity       Int
+  quantityallocated   Int
+  isActive            Boolean    @default(true)
+  WatchId             Int
+  WatchOrderId        Int
+
+  watch               Watch @relation(fields: [WatchId], references: [id])
+  watchOrder          WatchOrder @relation(fields: [WatchOrderId], references: [id])
+}
